@@ -35,7 +35,7 @@ def preprocess_image(image_input, resize_scale=2.0, denoise=True, threshold_meth
     
     # Step 2: Apply denoising
     if denoise:
-        img = cv2.fastNlMeansDenoisingColored(img, None, h=10, hForColorComponents=10, 
+        img = cv2.fastNlMeansDenoisingColored(img, None, h=10, hColor=10, 
                                                templateWindowSize=7, searchWindowSize=21)
     
     # Step 3: Convert to grayscale
@@ -110,7 +110,7 @@ def preprocess_with_fixed_threshold(image_input, resize_scale=2.0, denoise=True,
     
     # Apply denoising
     if denoise:
-        img = cv2.fastNlMeansDenoisingColored(img, None, h=10, hForColorComponents=10, 
+        img = cv2.fastNlMeansDenoisingColored(img, None, h=10, hColor=10, 
                                                templateWindowSize=7, searchWindowSize=21)
     
     # Convert to grayscale
