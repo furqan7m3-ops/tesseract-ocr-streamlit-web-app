@@ -10,6 +10,7 @@ from OCR.image_preprocessor import (
     optimal_pipeline,
     enhance_contrast
 )
+from OCR.word_generator import create_ocr_document_bytes
 
 
 st.set_page_config(page_title='Tesseract Text Extractor OCR', layout='wide')
@@ -74,11 +75,35 @@ if uploaded_file:
                         'confidence': result.get('confidence'),
                         'properties': result.get('properties')
                     })
+
+                    # Export to Word
+                    try:
+                        doc_bytes = create_ocr_document_bytes(result)
+                        st.download_button(
+                            label='📄 Download Word (.docx)',
+                            data=doc_bytes,
+                            file_name='ocr_output.docx',
+                            mime='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                        )
+                    except Exception as e:
+                        st.error(f'Could not create Word document: {e}')
                 else:
                     # pass the original file-like object or preprocessed image if available
                     text = extract_text(original_image)
                     st.markdown('### Extracted Text')
                     st.write(text)
+
+                    # Export to Word
+                    try:
+                        doc_bytes = create_ocr_document_bytes(text)
+                        st.download_button(
+                            label='📄 Download Word (.docx)',
+                            data=doc_bytes,
+                            file_name='ocr_output.docx',
+                            mime='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                        )
+                    except Exception as e:
+                        st.error(f'Could not create Word document: {e}')
 
             except Exception as e:
                 st.error(f'OCR failed: {e}')

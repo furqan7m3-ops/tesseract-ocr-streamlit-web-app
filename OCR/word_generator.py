@@ -154,3 +154,45 @@ def create_ocr_document(text, image_path=None, formatting_info=None, output_path
     
     # Save and return path
     return doc_gen.save()
+
+
+def create_ocr_document_bytes(text, image_path=None, formatting_info=None):
+    """
+    Create a Word document from OCR results and return it as bytes.
+
+    Args:
+        text: Extracted text or dict with text_blocks
+        image_path: Path to original image (optional)
+        formatting_info: Formatting information (optional)
+
+    Returns:
+        bytes: The DOCX file as bytes
+    """
+    from io import BytesIO
+
+    doc_gen = WordDocumentGenerator()
+
+    # Add title
+    doc_gen.add_title("OCR Extracted Document", font_size=16)
+
+    # Add original image if provided and exists
+    if image_path and os.path.exists(image_path):
+        doc_gen.add_heading("Source Image", level=2)
+        doc_gen.add_image(image_path)
+        doc_gen.add_page_break()
+
+    # Add extracted text
+    doc_gen.add_heading("Extracted Text", level=2)
+
+    if isinstance(text, dict) and 'text_blocks' in text:
+        doc_gen.add_text_blocks(text['text_blocks'], formatting_info=formatting_info or text.get('formatting'))
+    else:
+        doc_gen.add_raw_text(str(text))
+
+    # Save to bytes and return
+    buf = BytesIO()
+    doc_gen.save(buf)
+    buf.seek(0)
+    data = buf.read()
+    buf.close()
+    return data
